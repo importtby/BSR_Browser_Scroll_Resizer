@@ -5,3 +5,6 @@ Browser Scroll Resizer [BSR]
 Shortcut for quickly resize Blender File and Asset Explorer.
 
 <kbd>Alt + Scroll</kbd> to resize
+
+Add-on Preferences:
+* Multiplier Factor: Sensibility to grow and decresase size of files using the wheel of mouse
