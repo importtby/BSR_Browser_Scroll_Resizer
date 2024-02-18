@@ -12,21 +12,19 @@ import bpy, rna_keymap_ui
 from bpy.types import AddonPreferences
 
 class TBY_FBSR_prop(bpy.types.PropertyGroup):
-    
-    tb_multiplier_resize_factor: bpy.props.IntProperty(default=10)
-    tb_expand_menus : bpy.props.BoolProperty(default = False, description = "Collapse/Expanse readability of the panel")
+    tby_bsr_multiplier_resize_factor: bpy.props.IntProperty(default=10)
+    tby_bsr_expand_preferences : bpy.props.BoolProperty(default = False, description = "Collapse/Expanse readability of the panel")
 
 #OPERATIONS
-class TB_WheelUp(bpy.types.Operator):
+class tby_WheelUp(bpy.types.Operator):
     """Increase the size of file Viewer"""
-    bl_idname = "tbcontext.filesizeincrease"
+    bl_idname = "tbycontext.filesizeincrease"
     bl_label = "Increase file explorer size"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        wm = bpy.context.window_manager
-        cp = wm.TBY_FBSR_prop_wm
-        mrf = cp.tb_multiplier_resize_factor
+        tbytool = context.scene.tby_bsr_tool
+        mrf = tbytool.tby_bsr_multiplier_resize_factor
         
         type = context.space_data.params.display_type
         if type == 'LIST_VERTICAL':
@@ -41,16 +39,16 @@ class TB_WheelUp(bpy.types.Operator):
                 if bpy.context.space_data.params.display_size < 256:
                     bpy.context.space_data.params.display_size = bpy.context.space_data.params.display_size + mrf
         return {'FINISHED'}
-class TB_WheelDown(bpy.types.Operator):
+class tby_WheelDown(bpy.types.Operator):
     """Decrease the size of file Viewer"""
-    bl_idname = "tbcontext.filesizedecrease"
+    bl_idname = "tbycontext.filesizedecrease"
     bl_label = "Decrease file explorer size"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
         wm = bpy.context.window_manager
-        cp = wm.TBY_FBSR_prop_wm
-        mrf = cp.tb_multiplier_resize_factor
+        tbytool = context.scene.tby_bsr_tool
+        mrf = tbytool.tby_bsr_multiplier_resize_factor
         type = context.space_data.params.display_type
 
         if type == 'THUMBNAIL':
@@ -71,13 +69,12 @@ class TBY_BSR_Preferences_Panel(AddonPreferences):
     def draw(self, context):
         layout = self.layout
         box=layout.box()
-        tbtool = context.scene.tb_data_tool
-        cp = bpy.context.window_manager.TBY_FBSR_prop_wm
+        tbytool = context.scene.tby_bsr_tool
 
-        if tbtool.expand_menus:
-            box.prop(tbtool,"expand_menus",text="Expand Panel",icon='FULLSCREEN_EXIT')
+        if tbytool.tby_bsr_expand_preferences:
+            box.prop(tbytool,"tby_bsr_expand_preferences",text="Expand Panel",icon='FULLSCREEN_EXIT')
         else:
-            box.prop(tbtool,"expand_menus",text="Collapse Panel",icon='FULLSCREEN_ENTER')
+            box.prop(tbytool,"tby_bsr_expand_preferences",text="Collapse Panel",icon='FULLSCREEN_ENTER')
             
             box=layout.box()
             box.label(text="Hotkey:")
@@ -92,10 +89,13 @@ class TBY_BSR_Preferences_Panel(AddonPreferences):
             col.prop(self, "TBOVER", text="")
             box=layout.box()
             box.label(text="Properties:")
-            box.prop(cp,"tb_multiplier_resize_factor",text="Multiplier_Factor")
+            box.prop(tbytool,"tby_bsr_multiplier_resize_factor",text="Multiplier_Factor")
 
 
-classes = (TB_WheelDown,TB_WheelUp,TBY_BSR_Preferences_Panel)
+classes = (
+    TBY_FBSR_prop,
+    tby_WheelDown, tby_WheelUp,
+    TBY_BSR_Preferences_Panel)
 addon_keymaps = []    
 
 #append_individual_keys
@@ -107,6 +107,7 @@ def register():
  #CLASS
     for cls in classes:
         bpy.utils.register_class(cls)
+        bpy.types.Scene.tby_bsr_tool = bpy.props.PointerProperty(type=TBY_FBSR_prop)
  #KEYMAP
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -114,13 +115,15 @@ def register():
     if kc:    
     #3Dview
         km = kc.keymaps.new(name='File Browser', space_type='FILE_BROWSER')
-        key(True,km,km.keymap_items.new("tbcontext.filesizedecrease", 'WHEELOUTMOUSE', 'PRESS', alt=True))
-        key(True,km,km.keymap_items.new("tbcontext.filesizeincrease", 'WHEELINMOUSE', 'PRESS', alt=True))
-    bpy.utils.register_class(TBY_FBSR_prop)
-    bpy.types.WindowManager.TBY_FBSR_prop_wm = bpy.props.PointerProperty(type=TBY_FBSR_prop)
+        key(True,km,km.keymap_items.new("tbycontext.filesizedecrease", 'WHEELOUTMOUSE', 'PRESS', alt=True))
+        key(True,km,km.keymap_items.new("tbycontext.filesizeincrease", 'WHEELINMOUSE', 'PRESS', alt=True))
+    #bpy.utils.register_class(TBY_FBSR_prop)
+    #bpy.types.WindowManager.TBY_FBSR_prop_wm = bpy.props.PointerProperty(type=TBY_FBSR_prop)
+
 def unregister():
     for cls in classes:
-        bpy.utils.unregister_class(cls) 
+        bpy.utils.unregister_class(cls)
+        bpy.types.Scene.tby_bsr_tool
     
     #KEYMAP
     for km, kmi in addon_keymaps:
