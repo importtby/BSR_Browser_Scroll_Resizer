@@ -13,7 +13,6 @@ from bpy.types import AddonPreferences
 
 class TBY_FBSR_prop(bpy.types.PropertyGroup):
     tby_bsr_multiplier_resize_factor: bpy.props.IntProperty(default=10)
-    tby_bsr_expand_preferences : bpy.props.BoolProperty(default = False, description = "Collapse/Expanse readability of the panel")
 
 #OPERATIONS
 class tby_WheelUp(bpy.types.Operator):
@@ -68,28 +67,21 @@ class TBY_BSR_Preferences_Panel(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
-        box=layout.box()
         tbytool = context.scene.tby_bsr_tool
-
-        if tbytool.tby_bsr_expand_preferences:
-            box.prop(tbytool,"tby_bsr_expand_preferences",text="Expand Panel",icon='FULLSCREEN_EXIT')
-        else:
-            box.prop(tbytool,"tby_bsr_expand_preferences",text="Collapse Panel",icon='FULLSCREEN_ENTER')
-            
-            box=layout.box()
-            box.label(text="Hotkey:")
-            col = box.column()
-            kc = bpy.context.window_manager.keyconfigs.addon
-            for km, kmi in addon_keymaps:
-                km = km.active()
-                col.context_pointer_set("keymap", km)
-                rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
-            row = layout.row()
-            col = row.column()
-            col.prop(self, "TBOVER", text="")
-            box=layout.box()
-            box.label(text="Properties:")
-            box.prop(tbytool,"tby_bsr_multiplier_resize_factor",text="Multiplier_Factor")
+         
+        box=layout.box()
+        box.label(text="Hotkey:")
+        col = box.column()
+        kc = bpy.context.window_manager.keyconfigs.addon
+        for km, kmi in addon_keymaps:
+            km = km.active()
+            col.context_pointer_set("keymap", km)
+            rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+        row = layout.row()
+        col = row.column()
+        col.prop(self, "TBOVER", text="")
+        box.label(text="Properties:")
+        box.prop(tbytool,"tby_bsr_multiplier_resize_factor",text="Multiplier_Factor")
 
 
 classes = (
