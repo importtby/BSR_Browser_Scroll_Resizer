@@ -3,18 +3,20 @@
 # This program is free software: you can redistribute it and/or modify it, WITHOUT ANY WARRANTY that you wont wake up on the backrooms.
 
 bl_info = {
-    "name": "File_Browser_Scroll_Resizer", "author": "Taiseibutsu",
-    "version": (0, 2), "blender": (4, 1, 0), "location": "General UI Changes",
+    "name": "File_Browser_Scroll_Resizer (FBSR)", "author": "TBY",
+    "version": (1, 0, 0), "blender": (4, 0, 0), "location": "Add Shortcut Operation",
     "description": "Custom operation to resize content in the file browser using Alt + Scroll Mouse",
-    "wiki_url": "",
-    "category": "TB"}
+    "wiki_url": "", "category": "TBY"}
 
-import bpy 
+import bpy, rna_keymap_ui
 from bpy.types import AddonPreferences
 
-class TB_FBSR_custom_prop(bpy.types.PropertyGroup):
+class TBY_FBSR_prop(bpy.types.PropertyGroup):
+    
     tb_multiplier_resize_factor: bpy.props.IntProperty(default=10)
+    tb_expand_menus : bpy.props.BoolProperty(default = False, description = "Collapse/Expanse readability of the panel")
 
+#OPERATIONS
 class TB_WheelUp(bpy.types.Operator):
     """Increase the size of file Viewer"""
     bl_idname = "tbcontext.filesizeincrease"
@@ -23,7 +25,7 @@ class TB_WheelUp(bpy.types.Operator):
     
     def execute(self, context):
         wm = bpy.context.window_manager
-        cp = wm.TB_FBSR_custom_prop_wm
+        cp = wm.TBY_FBSR_prop_wm
         mrf = cp.tb_multiplier_resize_factor
         
         type = context.space_data.params.display_type
@@ -47,7 +49,7 @@ class TB_WheelDown(bpy.types.Operator):
     
     def execute(self, context):
         wm = bpy.context.window_manager
-        cp = wm.TB_FBSR_custom_prop_wm
+        cp = wm.TBY_FBSR_prop_wm
         mrf = cp.tb_multiplier_resize_factor
         type = context.space_data.params.display_type
 
@@ -63,15 +65,44 @@ class TB_WheelDown(bpy.types.Operator):
             bpy.context.space_data.params.display_type = 'LIST_VERTICAL'                                
         return {'FINISHED'}
 
-class TB_Custom_Dimensions_PreferencesPanel(AddonPreferences):
+class TBY_BSR_Preferences_Panel(AddonPreferences):
     bl_idname = __name__
+
     def draw(self, context):
         layout = self.layout
         box=layout.box()
-        cp = bpy.context.window_manager.TB_FBSR_custom_prop_wm
-        box.prop(cp,"tb_multiplier_resize_factor",text="Multiplier_Factor")
+        tbtool = context.scene.tb_data_tool
+        cp = bpy.context.window_manager.TBY_FBSR_prop_wm
 
-classes = (TB_WheelDown,TB_WheelUp,TB_Custom_Dimensions_PreferencesPanel)
+        if tbtool.expand_menus:
+            box.prop(tbtool,"expand_menus",text="Expand Panel",icon='FULLSCREEN_EXIT')
+        else:
+            box.prop(tbtool,"expand_menus",text="Collapse Panel",icon='FULLSCREEN_ENTER')
+            
+            box=layout.box()
+            box.label(text="Hotkey:")
+            col = box.column()
+            kc = bpy.context.window_manager.keyconfigs.addon
+            for km, kmi in addon_keymaps:
+                km = km.active()
+                col.context_pointer_set("keymap", km)
+                rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+            row = layout.row()
+            col = row.column()
+            col.prop(self, "TBOVER", text="")
+            box=layout.box()
+            box.label(text="Properties:")
+            box.prop(cp,"tb_multiplier_resize_factor",text="Multiplier_Factor")
+
+
+classes = (TB_WheelDown,TB_WheelUp,TBY_BSR_Preferences_Panel)
+addon_keymaps = []    
+
+#append_individual_keys
+def key(dfbool,km,kmi):
+    kmi.active = dfbool
+    addon_keymaps.append((km, kmi)) 
+
 def register():
  #CLASS
     for cls in classes:
@@ -83,23 +114,20 @@ def register():
     if kc:    
     #3Dview
         km = kc.keymaps.new(name='File Browser', space_type='FILE_BROWSER')
-        kmi = km.keymap_items.new("tbcontext.filesizedecrease", 'WHEELOUTMOUSE', 'PRESS', alt=True)
-        kmi.active = True
-        kmi = km.keymap_items.new("tbcontext.filesizeincrease", 'WHEELINMOUSE', 'PRESS', alt=True)
-        kmi.active = True
-    bpy.utils.register_class(TB_FBSR_custom_prop)
-    bpy.types.WindowManager.TB_FBSR_custom_prop_wm = bpy.props.PointerProperty(type=TB_FBSR_custom_prop)
+        key(True,km,km.keymap_items.new("tbcontext.filesizedecrease", 'WHEELOUTMOUSE', 'PRESS', alt=True))
+        key(True,km,km.keymap_items.new("tbcontext.filesizeincrease", 'WHEELINMOUSE', 'PRESS', alt=True))
+    bpy.utils.register_class(TBY_FBSR_prop)
+    bpy.types.WindowManager.TBY_FBSR_prop_wm = bpy.props.PointerProperty(type=TBY_FBSR_prop)
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls) 
-    wm = bpy.context.window_manager
-    kc = wm.keyconfigs.addon
-    km = kc.keymaps.new(name='File Browser', space_type='FILE_BROWSER')
-    kmi = km.keymap_items.new("tbcontext.filesizedecrease", 'WHEELOUTMOUSE', 'PRESS', alt=True)
-    kmi.active = False
-    kmi = km.keymap_items.new("tbcontext.filesizeincrease", 'WHEELINMOUSE', 'PRESS', alt=True)
-    kmi.active = False           
-    bpy.utils.unregister_class(TB_FBSR_custom_prop)
-    bpy.types.WindowManager.TB_FBSR_custom_prop = bpy.props.PointerProperty(type=TB_FBSR_custom_prop)        
+    
+    #KEYMAP
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()   
+
+    bpy.utils.unregister_class(TBY_FBSR_prop)
+    
 if __name__ == "__main__":
     register()
