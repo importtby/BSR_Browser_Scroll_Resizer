@@ -1,7 +1,7 @@
 
 bl_info = {
     "name": "File_Browser_Scroll_Resizer (FBSR)", "author": "TBY",
-    "version": (1, 0, 0), "blender": (4, 0, 0), "location": "Add Shortcut Operation",
+    "version": (1, 0, 1), "blender": (4, 0, 0), "location": "Add Shortcut Operation",
     "description": "Custom operation to resize content in the file browser using Alt + Scroll Mouse",
     "wiki_url": "", "category": "TBY"}
 
