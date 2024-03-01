@@ -1,7 +1,4 @@
 
-# (GNU GPL) <2022> <Taiseibutsu>" Developed for Blender 3.2
-# This program is free software: you can redistribute it and/or modify it, WITHOUT ANY WARRANTY that you wont wake up on the backrooms.
-
 bl_info = {
     "name": "File_Browser_Scroll_Resizer (FBSR)", "author": "TBY",
     "version": (1, 0, 0), "blender": (4, 0, 0), "location": "Add Shortcut Operation",
