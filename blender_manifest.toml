@@ -12,7 +12,7 @@ type = "add-on"
 website = "https://gitlab.com/lfs.coop/blender/camera-plane"
 
 # https://github.com/importtby/BSR_Browser_Scroll_Resizer
-tags = ["File Browser", "Asset Browser"]
+tags = ["User Interface"]
 
 blender_version_min = "4.2.0"
 # blender_version_max = "5.1.0"
