@@ -1,8 +1,8 @@
 schema_version = "1.0.0"
 
-id = "browser_scroll_resizer"
+id = "browser_scroll_resize"
 version = "1.0.0"
-name = "Browser Scroll Resizer"
+name = "Browser Scroll Resize"
 tagline = "Resize File Size on Browser with Mouse Wheel"
 maintainer = "Barrunterio <barrunterio@pm.me>"
 type = "add-on"
