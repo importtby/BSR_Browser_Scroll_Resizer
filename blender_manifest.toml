@@ -1,10 +1,10 @@
-schema_version = "1.0.2"
+schema_version = "1.0.0"
 
-id = "bsr_browser_scroll_resizer"
-version = "1.0.2"
+id = "browser_scroll_resizer"
+version = "1.0.0"
 name = "Browser Scroll Resizer"
 tagline = "Resize File Size on Browser with Mouse Wheel"
-maintainer = "Taiseibutsu <import_tby@pm.me>"
+maintainer = "Barrunterio <barrunterio@pm.me>"
 type = "add-on"
 
 # Allows the user to change size of thumbnails in the browser adding with wheel shortcuts = ["files"]
