@@ -1,9 +1,9 @@
 
 bl_info = {
-    "name": "File_Browser_Scroll_Resizer (FBSR)", "author": "TBY",
-    "version": (1, 0, 1), "blender": (4, 0, 0), "location": "Add Shortcut Operation",
+    "name": "Browser_Scroll_Resizer (BSR)", "author": "Barrunterio",
+    "version": (1, 0, 0), "blender": (4, 2, 0), "location": "Add Shortcut Operation",
     "description": "Custom operation to resize content in the file browser using Alt + Scroll Mouse",
-    "wiki_url": "", "category": "TBY"}
+    "wiki_url": "", "category": "Interface"}
 
 import bpy, rna_keymap_ui
 from bpy.types import AddonPreferences
