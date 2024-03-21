@@ -1,7 +1,7 @@
-schema_version = "1.0.1"
+schema_version = "1.0.2"
 
 id = "bsr_browser_scroll_resizer"
-version = "1.0.1"
+version = "1.0.2"
 name = "Browser Scroll Resizer"
 tagline = "Resize File Size on Browser with Mouse Wheel"
 maintainer = "Taiseibutsu <import_tby@pm.me>"
